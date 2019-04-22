@@ -28,6 +28,10 @@ map::map(float tilesS, sf::Vector2f pos) : tilesSizes(tilesS), position(pos)
 	data.color = sf::Color(0, 128, 0, 255);
 	data.type = '0';
 	tilesData.push_back(data);
+	data.texture.loadFromFile("../img/grass3.png");
+	data.color = sf::Color(34, 177, 76, 255);
+	data.type = '0';
+	tilesData.push_back(data);
 	data.texture.loadFromFile("../img/floor.png");
 	data.color = sf::Color(0, 0, 0, 255);
 	data.type = '0';
@@ -349,7 +353,7 @@ void map::drawRange(int range, sf::Vector2i startPos, sf::RenderWindow& window)
 					}
 				}
 			}
-			if (vis[i][j] <= range)
+			if (vis[i][j] <= range && vis[i][j] != -1)
 			{
 				edge.setTexture(inRangeTex);
 				edge.setScale(tilesSizes / 30.0f, tilesSizes / 30.0f);

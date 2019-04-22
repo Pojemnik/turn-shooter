@@ -17,7 +17,7 @@ int gameLoop(sf::RenderWindow &window)
 
 	map Map(30, sf::Vector2f(10, 10));
 	sf::Image mapImage;
-	mapImage.loadFromFile("mapa2.png");
+	mapImage.loadFromFile("../maps/map2.png");
 	if (Map.loadFromBitmap(mapImage))
 	{
 		std::cout << "Map error";
