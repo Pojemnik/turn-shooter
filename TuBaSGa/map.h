@@ -19,6 +19,9 @@ private:
 	std::vector<tileData> tilesData;
 	sf::Texture targetTex;
 	sf::Texture lineTex[2];
+	sf::Texture rangeTex[2];
+	sf::Texture inRangeTex;
+	int** vis;
 
 public:
 	sf::Vector2f position;
@@ -32,5 +35,5 @@ public:
 	void scroll(int, sf::Vector2f);
 	std::vector<sf::Vector2i> drawPath(sf::Vector2i, sf::Vector2i, sf::RenderWindow&);
 	bool canPass(int, int);
-	void loadTextures();
+	void drawRange(int range, sf::Vector2i startPos, sf::RenderWindow& window);
 };

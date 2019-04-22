@@ -14,17 +14,17 @@ int gameLoop(sf::RenderWindow &window)
 	int zoomLevel = 0;
 	std::ifstream file;
 	volatile unsigned int framesRendered = 0;
-	
+
 	map Map(30, sf::Vector2f(10, 10));
 	sf::Image mapImage;
 	mapImage.loadFromFile("mapa2.png");
-	if(Map.loadFromBitmap(mapImage))
+	if (Map.loadFromBitmap(mapImage))
 	{
 		std::cout << "Map error";
 		system("pause");
 		return 0;
 	}
-	Map.print();
+	//Map.print();
 	sf::Vector2i mousePos = sf::Mouse::getPosition();
 	std::vector<sf::Texture> playerTex;
 	sf::Texture tex;
@@ -74,7 +74,7 @@ int gameLoop(sf::RenderWindow &window)
 			}
 			if (event.type == sf::Event::MouseButtonPressed)
 			{
-				if (event.mouseButton.button == sf::Mouse::Button::Left && target != sf::Vector2i(-1,-1) && path[0] != sf::Vector2i(0,0) && !Player.busy)
+				if (event.mouseButton.button == sf::Mouse::Button::Left && target != sf::Vector2i(-1, -1) && path[0] != sf::Vector2i(0, 0) && !Player.busy)
 				{
 					Player.move(Map, path);
 				}
@@ -85,7 +85,9 @@ int gameLoop(sf::RenderWindow &window)
 		if (target != sf::Vector2i(-1, -1) && !Player.busy)
 		{
 			path = Map.drawPath(Player.mapPosition, target, window);
-		}	
+			if (path[0] != sf::Vector2i(0, 0))
+				Map.drawRange(20, Player.mapPosition, window);
+		}
 		if (++framesRendered == UINT_MAX)
 		{
 			framesRendered = 0;
@@ -93,7 +95,7 @@ int gameLoop(sf::RenderWindow &window)
 		if (framesRendered % 10 == 0)
 		{
 			Player.step(Map);
-		}	
+		}
 		window.draw(Player.sprite);
 		window.display();
 		while (clock.getElapsedTime().asMilliseconds() < 1000 / frameRate);
