@@ -137,10 +137,10 @@ std::vector<sf::Vector2i> map::drawPath(sf::Vector2i start, sf::Vector2i dest, s
 	int last = -1;
 	sf::Sprite line;
 	line.setTexture(lineTex[0]);
-	line.setScale(tilesSizes / 10, tilesSizes / 10);
+	line.setScale(tilesSizes / 30.0f, tilesSizes / 30.0f);
 	sf::Sprite curve;
 	curve.setTexture(lineTex[1]);
-	curve.setScale(tilesSizes / 10, tilesSizes / 10);
+	curve.setScale(tilesSizes / 30.0f, tilesSizes / 30.0f);
 	std::vector<sf::Vector2i> next;
 	while (sf::Vector2i(n.y, n.x) != start)
 	{
@@ -169,7 +169,7 @@ std::vector<sf::Vector2i> map::drawPath(sf::Vector2i start, sf::Vector2i dest, s
 		{
 			line.setOrigin(4.5, 4.5);
 			line.setRotation(90);
-			line.setOrigin(0, 10);
+			line.setOrigin(0, 30);
 			line.setPosition(sf::Vector2f(position.x + n.x*tilesSizes, position.y + n.y*tilesSizes));
 			window.draw(line);
 		}
@@ -178,8 +178,8 @@ std::vector<sf::Vector2i> map::drawPath(sf::Vector2i start, sf::Vector2i dest, s
 			if (next[i + 1].x == 1)
 			{
 				curve.setOrigin(4.5, 4.5);
-				curve.setRotation(-90);
-				curve.setOrigin(10, 0);
+				curve.setRotation(270);
+				curve.setOrigin(30, 0);
 				curve.setPosition(sf::Vector2f(position.x + n.x*tilesSizes, position.y + n.y*tilesSizes));
 				window.draw(curve);
 			}
@@ -198,7 +198,7 @@ std::vector<sf::Vector2i> map::drawPath(sf::Vector2i start, sf::Vector2i dest, s
 			{
 				curve.setOrigin(4.5, 4.5);
 				curve.setRotation(180);
-				curve.setOrigin(10, 10);
+				curve.setOrigin(30, 30);
 				curve.setPosition(sf::Vector2f(position.x + n.x*tilesSizes, position.y + n.y*tilesSizes));
 				window.draw(curve);
 			}
@@ -206,7 +206,7 @@ std::vector<sf::Vector2i> map::drawPath(sf::Vector2i start, sf::Vector2i dest, s
 			{
 				curve.setOrigin(4.5, 4.5);
 				curve.setRotation(90);
-				curve.setOrigin(0, 10);
+				curve.setOrigin(0, 30);
 				curve.setPosition(sf::Vector2f(position.x + n.x*tilesSizes, position.y + n.y*tilesSizes));
 				window.draw(curve);
 			}
@@ -216,8 +216,8 @@ std::vector<sf::Vector2i> map::drawPath(sf::Vector2i start, sf::Vector2i dest, s
 			if (next[i + 1].y == 1)
 			{
 				curve.setOrigin(4.5, 4.5);
-				curve.setRotation(-90);
-				curve.setOrigin(10, 0);
+				curve.setRotation(270);
+				curve.setOrigin(30, 0);
 				curve.setPosition(sf::Vector2f(position.x + n.x*tilesSizes, position.y + n.y*tilesSizes));
 				window.draw(curve);
 			}
@@ -225,7 +225,7 @@ std::vector<sf::Vector2i> map::drawPath(sf::Vector2i start, sf::Vector2i dest, s
 			{
 				curve.setOrigin(4.5, 4.5);
 				curve.setRotation(180);
-				curve.setOrigin(10, 10);
+				curve.setOrigin(30, 30);
 				curve.setPosition(sf::Vector2f(position.x + n.x*tilesSizes, position.y + n.y*tilesSizes));
 				window.draw(curve);
 			}
@@ -244,7 +244,7 @@ std::vector<sf::Vector2i> map::drawPath(sf::Vector2i start, sf::Vector2i dest, s
 			{
 				curve.setOrigin(4.5, 4.5);
 				curve.setRotation(90);
-				curve.setOrigin(0, 10);
+				curve.setOrigin(0, 30);
 				curve.setPosition(sf::Vector2f(position.x + n.x*tilesSizes, position.y + n.y*tilesSizes));
 				window.draw(curve);
 			}
@@ -254,7 +254,7 @@ std::vector<sf::Vector2i> map::drawPath(sf::Vector2i start, sf::Vector2i dest, s
 	sf::Sprite target;
 	target.setTexture(targetTex);
 	target.setPosition(sf::Vector2f(position.x + dest.x*tilesSizes, position.y + dest.y*tilesSizes));
-	target.setScale(tilesSizes / 10, tilesSizes / 10);
+	target.setScale(tilesSizes / 30.0f, tilesSizes / 30.0f);
 	window.draw(target);
 	return next;
 }
@@ -314,7 +314,6 @@ void map::drawRange(int range, sf::Vector2i startPos, sf::RenderWindow& window)
 		{
 			if (vis[i][j] == -1 || vis[i][j] == range + 1)
 			{
-				int entrances_n = 0;
 				for (int k = 0; k < 4; k++)
 				{
 					sf::Vector2i n = sf::Vector2i(i, j);
@@ -341,11 +340,10 @@ void map::drawRange(int range, sf::Vector2i startPos, sf::RenderWindow& window)
 							break;
 						case 3:
 							edge.setOrigin(4.5, 4.5);
-							edge.setRotation(-90);
+							edge.setRotation(270);
 							edge.setOrigin(30, 0);
 							break;
 						}
-						entrances_n++;
 						edge.setTexture(rangeTex[0]);
 						edge.setScale(tilesSizes / 30.0f, tilesSizes / 30.0f);
 						edge.setPosition(position.x + n.y * tilesSizes, position.y + n.x * tilesSizes);
@@ -355,11 +353,8 @@ void map::drawRange(int range, sf::Vector2i startPos, sf::RenderWindow& window)
 			}
 			if (vis[i][j] <= range && vis[i][j] != -1)
 			{
-				edge.setTexture(inRangeTex);
-				edge.setScale(tilesSizes / 30.0f, tilesSizes / 30.0f);
-				edge.setPosition(position.x + j * tilesSizes, position.y + i * tilesSizes);
-				window.draw(edge);
-				int x = 0;
+				bool walls[] = { false,false,false,false };
+				int walls_n = 0;
 				for (int k = 0; k < 4; k++)
 				{
 					sf::Vector2i n = sf::Vector2i(i, j);
@@ -367,11 +362,11 @@ void map::drawRange(int range, sf::Vector2i startPos, sf::RenderWindow& window)
 					n.y += dy[k];
 					if (n.x >= 0 && n.x < size.y && n.y >= 0 && n.y < size.x && (vis[n.x][n.y] > range || vis[n.x][n.y] == -1))
 					{
-						x++;
-						break;
+						walls_n++;
+						walls[k] = true;
 					}
 				}
-				if (x == 0)
+				if (walls_n < 3)
 				{
 					int dx2[] = { 1,1,-1,-1 };
 					int dy2[] = { 1,-1,1,-1 };
@@ -382,33 +377,53 @@ void map::drawRange(int range, sf::Vector2i startPos, sf::RenderWindow& window)
 						n.y += dy2[k];
 						if (n.x >= 0 && n.x < size.y && n.y >= 0 && n.y < size.x && (vis[n.x][n.y] > range || vis[n.x][n.y] == -1))
 						{
+							bool draw = false;
 							switch (k)
 							{
 							case 0:
-								edge.setOrigin(4.5, 4.5);
-								edge.setRotation(180);
-								edge.setOrigin(30, 30);
+								if (!walls[2] && !walls[3])
+								{
+									edge.setOrigin(4.5, 4.5);
+									edge.setRotation(180);
+									edge.setOrigin(30, 30);
+									draw = true;
+								}
 								break;
 							case 1:
-								edge.setOrigin(4.5, 4.5);
-								edge.setRotation(-90);
-								edge.setOrigin(30, 0);
+								if (!walls[3] && !walls[1])
+								{
+									edge.setOrigin(4.5, 4.5);
+									edge.setRotation(270);
+									edge.setOrigin(30, 0);
+									draw = true;
+								}
 								break;
 							case 2:
-								edge.setOrigin(4.5, 4.5);
-								edge.setRotation(90);
-								edge.setOrigin(0, 30);
+								if (!walls[0] && !walls[2])
+								{
+									edge.setOrigin(4.5, 4.5);
+									edge.setRotation(90);
+									edge.setOrigin(0, 30);
+									draw = true;
+								}
 								break;
 							case 3:
-								edge.setOrigin(4.5, 4.5);
-								edge.setRotation(0);
-								edge.setOrigin(0, 0);
+								if (!walls[0] && !walls[1])
+								{
+									edge.setOrigin(4.5, 4.5);
+									edge.setRotation(0);
+									edge.setOrigin(0, 0);
+									draw = true;
+								}
 								break;
 							}
-							edge.setTexture(rangeTex[1]);
-							edge.setScale(tilesSizes / 30.0f, tilesSizes / 30.0f);
-							edge.setPosition(position.x + (n.y - dy2[k]) * tilesSizes, position.y + (n.x - dx2[k]) * tilesSizes);
-							window.draw(edge);
+							if (draw)
+							{
+								edge.setTexture(rangeTex[1]);
+								edge.setScale(tilesSizes / 30.0f, tilesSizes / 30.0f);
+								edge.setPosition(position.x + (n.y - dy2[k]) * tilesSizes, position.y + (n.x - dx2[k]) * tilesSizes);
+								window.draw(edge);
+							}
 						}
 					}
 				}

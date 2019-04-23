@@ -71,6 +71,7 @@ int gameLoop(sf::RenderWindow &window)
 				{
 					target = sf::Vector2i(-1, -1);
 				}
+				std::cout << target.x << ' ' << target.y << std::endl;
 			}
 			if (event.type == sf::Event::MouseButtonPressed)
 			{
