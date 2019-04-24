@@ -4,8 +4,11 @@
 #include <iostream>
 #include "map.h"
 #include "player.h"
+#include "UI.h"
 
 float frameRate = 60;
+
+enum class turnPhase { moving, shooting };
 
 int gameLoop(sf::RenderWindow &window)
 {
@@ -14,7 +17,6 @@ int gameLoop(sf::RenderWindow &window)
 	int zoomLevel = 0;
 	std::ifstream file;
 	volatile unsigned int framesRendered = 0;
-
 	map Map(30, sf::Vector2f(10, 10));
 	sf::Image mapImage;
 	mapImage.loadFromFile("../maps/map2.png");
@@ -38,6 +40,8 @@ int gameLoop(sf::RenderWindow &window)
 	vect.push_back(&Player.sprite);
 	sf::Vector2i target = sf::Vector2i(-1, -1);
 	std::vector<sf::Vector2i> path(1, sf::Vector2i(0, 0));
+	gameUI ui(sf::Vector2f(0, 640));
+	turnPhase phase = turnPhase::moving;
 	while (window.isOpen())
 	{
 		bool pathRefresh = false;
@@ -75,15 +79,33 @@ int gameLoop(sf::RenderWindow &window)
 			}
 			if (event.type == sf::Event::MouseButtonPressed)
 			{
-				if (event.mouseButton.button == sf::Mouse::Button::Left && target != sf::Vector2i(-1, -1) && path[0] != sf::Vector2i(0, 0) && !Player.busy)
+				if (event.mouseButton.button == sf::Mouse::Button::Left && mousePos.x > ui.position.x && mousePos.x < ui.position.x + ui.size.x && mousePos.y > ui.position.y && mousePos.y < ui.position.y + ui.size.y)
 				{
-					Player.move(Map, path);
+					switch (ui.clicked(mousePos))
+					{
+					case buttonCode::walk:
+						phase = turnPhase::moving;
+						std::cout << "walk button pressed!" << std::endl;
+						break;
+					case buttonCode::shoot:
+						phase = turnPhase::shooting;
+						break;
+					case buttonCode::none:
+						break;
+					}
+				}
+				else if (phase == turnPhase::moving)
+				{
+					if (event.mouseButton.button == sf::Mouse::Button::Left && target != sf::Vector2i(-1, -1) && path[0] != sf::Vector2i(0, 0) && !Player.busy)
+					{
+						Player.move(Map, path);
+					}
 				}
 			}
 		}
 		window.clear();
 		Map.draw(window);
-		if (target != sf::Vector2i(-1, -1) && !Player.busy)
+		if (target != sf::Vector2i(-1, -1) && !Player.busy && phase == turnPhase::moving && !(mousePos.x > ui.position.x && mousePos.x < ui.position.x + ui.size.x && mousePos.y > ui.position.y && mousePos.y < ui.position.y + ui.size.y))
 		{
 			path = Map.drawPath(Player.mapPosition, target, window);
 			if (path[0] != sf::Vector2i(0, 0))
@@ -96,8 +118,10 @@ int gameLoop(sf::RenderWindow &window)
 		if (framesRendered % 10 == 0)
 		{
 			Player.step(Map);
+			ui.hoover(mousePos);
 		}
 		window.draw(Player.sprite);
+		ui.draw(window);
 		window.display();
 		while (clock.getElapsedTime().asMilliseconds() < 1000 / frameRate);
 		clock.restart();
@@ -107,7 +131,7 @@ int gameLoop(sf::RenderWindow &window)
 
 int main()
 {
-	sf::RenderWindow window(sf::VideoMode(800, 600), "NAME");
+	sf::RenderWindow window(sf::VideoMode(1280, 720), "NAME");
 	gameLoop(window);
 	return 0;
 }
