@@ -26,11 +26,13 @@ private:
 	sf::Sprite sprite;
 	sf::Texture texture;
 	std::vector<UIbutton> buttons;
+
 public:
 	sf::Vector2f size;
 	sf::Vector2f position;
 	gameUI(sf::Vector2f pos);
 	void draw(sf::RenderWindow &window);
 	void hoover(sf::Vector2i mousePos);
+	bool isHovered(sf::Vector2i mousePos);
 	buttonCode clicked(sf::Vector2i mousePos);
 };

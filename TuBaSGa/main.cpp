@@ -88,7 +88,8 @@ int gameLoop(sf::RenderWindow &window)
 						std::cout << "walk button pressed!" << std::endl;
 						break;
 					case buttonCode::shoot:
-						phase = turnPhase::shooting;
+						//phase = turnPhase::shooting;
+						std::cout << "shoot button pressed!" << std::endl;
 						break;
 					case buttonCode::none:
 						break;
@@ -102,10 +103,24 @@ int gameLoop(sf::RenderWindow &window)
 					}
 				}
 			}
+			if (event.type == sf::Event::KeyPressed)
+			{
+				switch(event.key.code)
+				{
+				case sf::Keyboard::Num1:
+					phase = turnPhase::moving;
+					std::cout << "walk button pressed!" << std::endl;
+					break;
+				case sf::Keyboard::Num2:
+					//phase = turnPhase::shooting;
+					std::cout << "shoot button pressed!" << std::endl;
+					break;
+				}
+			}
 		}
 		window.clear();
 		Map.draw(window);
-		if (target != sf::Vector2i(-1, -1) && !Player.busy && phase == turnPhase::moving && !(mousePos.x > ui.position.x && mousePos.x < ui.position.x + ui.size.x && mousePos.y > ui.position.y && mousePos.y < ui.position.y + ui.size.y))
+		if (target != sf::Vector2i(-1, -1) && !Player.busy && phase == turnPhase::moving && !ui.isHovered(mousePos))
 		{
 			path = Map.drawPath(Player.mapPosition, target, window);
 			if (path[0] != sf::Vector2i(0, 0))
