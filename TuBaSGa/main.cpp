@@ -9,6 +9,15 @@
 float frameRate = 60;
 
 enum class turnPhase { moving, shooting };
+enum class turnUser {player, ai};
+
+struct turnStruct
+{
+	turnUser user = turnUser::player;
+	turnPhase phase = turnPhase::moving;
+	unsigned int number = 1;
+	unsigned int actionPoints = 2;
+};
 
 int gameLoop(sf::RenderWindow &window)
 {
@@ -41,7 +50,7 @@ int gameLoop(sf::RenderWindow &window)
 	sf::Vector2i target = sf::Vector2i(-1, -1);
 	std::vector<sf::Vector2i> path(1, sf::Vector2i(0, 0));
 	gameUI ui(sf::Vector2f(0, 640));
-	turnPhase phase = turnPhase::moving;
+	turnStruct turn;
 	while (window.isOpen())
 	{
 		bool pathRefresh = false;
@@ -64,9 +73,9 @@ int gameLoop(sf::RenderWindow &window)
 				if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Middle))
 				{
 					Map.scroll(0, sf::Vector2f(mousePos.x - event.mouseMove.x, mousePos.y - event.mouseMove.y));
+					Player.moveSprite(Map);
 				}
 				mousePos = sf::Vector2i(event.mouseMove.x, event.mouseMove.y);
-				Player.moveSprite(Map);
 				if (mousePos.x > Map.position.x && mousePos.y > Map.position.y && mousePos.x <= Map.position.x + Map.size.x * Map.tilesSizes && mousePos.y <= Map.position.y + Map.size.y * Map.tilesSizes)
 				{
 					target = sf::Vector2i((mousePos.x - Map.position.x - 1) / Map.tilesSizes, (mousePos.y - Map.position.y - 1) / Map.tilesSizes);
@@ -79,27 +88,34 @@ int gameLoop(sf::RenderWindow &window)
 			}
 			if (event.type == sf::Event::MouseButtonPressed)
 			{
-				if (event.mouseButton.button == sf::Mouse::Button::Left && mousePos.x > ui.position.x && mousePos.x < ui.position.x + ui.size.x && mousePos.y > ui.position.y && mousePos.y < ui.position.y + ui.size.y)
+				if (event.mouseButton.button == sf::Mouse::Button::Left)
 				{
-					switch (ui.clicked(mousePos))
+					if (ui.isHovered(mousePos))
 					{
-					case buttonCode::walk:
-						phase = turnPhase::moving;
-						std::cout << "walk button pressed!" << std::endl;
-						break;
-					case buttonCode::shoot:
-						//phase = turnPhase::shooting;
-						std::cout << "shoot button pressed!" << std::endl;
-						break;
-					case buttonCode::none:
-						break;
+						switch (ui.clicked(mousePos))
+						{
+						case buttonCode::walk:
+							turn.phase = turnPhase::moving;
+							ui.setActivePhase(1);
+							std::cout << "walk button pressed!" << std::endl;
+							break;
+						case buttonCode::shoot:
+							turn.phase = turnPhase::shooting;
+							ui.setActivePhase(2);
+							std::cout << "shoot button pressed!" << std::endl;
+							break;
+						case buttonCode::none:
+							break;
+						}
 					}
-				}
-				else if (phase == turnPhase::moving)
-				{
-					if (event.mouseButton.button == sf::Mouse::Button::Left && target != sf::Vector2i(-1, -1) && path[0] != sf::Vector2i(0, 0) && !Player.busy)
+					else if (turn.phase == turnPhase::moving)
 					{
-						Player.move(Map, path);
+						if (target != sf::Vector2i(-1, -1) && path[0] != sf::Vector2i(0, 0) && !Player.busy && path.size() <= Player.range && turn.actionPoints > 0)
+						{
+							turn.actionPoints--;
+							ui.setAP(turn.actionPoints);
+							Player.move(Map, path);
+						}
 					}
 				}
 			}
@@ -108,11 +124,13 @@ int gameLoop(sf::RenderWindow &window)
 				switch(event.key.code)
 				{
 				case sf::Keyboard::Num1:
-					phase = turnPhase::moving;
+					turn.phase = turnPhase::moving;
+					ui.setActivePhase(1);
 					std::cout << "walk button pressed!" << std::endl;
 					break;
 				case sf::Keyboard::Num2:
-					//phase = turnPhase::shooting;
+					turn.phase = turnPhase::shooting;
+					ui.setActivePhase(2);
 					std::cout << "shoot button pressed!" << std::endl;
 					break;
 				}
@@ -120,11 +138,11 @@ int gameLoop(sf::RenderWindow &window)
 		}
 		window.clear();
 		Map.draw(window);
-		if (target != sf::Vector2i(-1, -1) && !Player.busy && phase == turnPhase::moving && !ui.isHovered(mousePos))
+		if (target != sf::Vector2i(-1, -1) && !Player.busy && turn.phase == turnPhase::moving && !ui.isHovered(mousePos))
 		{
 			path = Map.drawPath(Player.mapPosition, target, window);
 			if (path[0] != sf::Vector2i(0, 0))
-				Map.drawRange(20, Player.mapPosition, window);
+				Map.drawRange(Player.range, Player.mapPosition, window);
 		}
 		if (++framesRendered == UINT_MAX)
 		{

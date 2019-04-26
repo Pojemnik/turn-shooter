@@ -6,6 +6,7 @@ player::player(std::vector<sf::Texture>& tex, sf::Vector2i mapPos, map& Map) : m
 	sprite.setScale(1.0f/5.0f, 1.0f/5.0f);
 	moveSprite(Map);
 	tex_it = textures.begin();
+	range = 20;
 }
 
 void player::moveSprite(map& Map)

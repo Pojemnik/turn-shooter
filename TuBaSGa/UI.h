@@ -23,9 +23,10 @@ public:
 class gameUI
 {
 private:
-	sf::Sprite sprite;
-	sf::Texture texture;
+	sf::Sprite sprite, apSprite, activeSprite;
+	sf::Texture texture, apTex, activeTex;
 	std::vector<UIbutton> buttons;
+	int phase, actionPoints;
 
 public:
 	sf::Vector2f size;
@@ -35,4 +36,6 @@ public:
 	void hoover(sf::Vector2i mousePos);
 	bool isHovered(sf::Vector2i mousePos);
 	buttonCode clicked(sf::Vector2i mousePos);
+	void setActivePhase(int p);
+	void setAP(int ap);
 };

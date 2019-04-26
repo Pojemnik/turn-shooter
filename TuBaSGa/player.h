@@ -17,6 +17,7 @@ public:
 	sf::Sprite sprite;
 	sf::Vector2i mapPosition;
 	bool busy = false;
+	int range;
 
 	player(std::vector<sf::Texture>&, sf::Vector2i, map&);
 	void moveSprite(map&);

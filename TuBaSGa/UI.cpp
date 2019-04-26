@@ -6,6 +6,10 @@ gameUI::gameUI(sf::Vector2f pos) : position(pos)
 	texture.loadFromFile("../img/ui_left_bottom.png");
 	sprite.setTexture(texture);
 	sprite.setPosition(pos);
+	apTex.loadFromFile("../img/ap.png");
+	apSprite.setTexture(apTex);
+	activeTex.loadFromFile("../img/active_phase.png");
+	activeSprite.setTexture(activeTex);
 	std::vector<sf::Texture> textures;
 	sf::Texture temp;
 	temp.loadFromFile("../img/walk_ico/walk_ico1.png");
@@ -23,6 +27,8 @@ gameUI::gameUI(sf::Vector2f pos) : position(pos)
 	temp.loadFromFile("../img/shoot_ico/shoot_ico3.png");
 	textures.push_back(temp);
 	buttons.push_back(UIbutton(textures, sf::Vector2f(pos.x + 80, pos.y + 20), buttonCode::shoot));
+	phase = 1;
+	actionPoints = 2;
 }
 
 void gameUI::draw(sf::RenderWindow &window)
@@ -32,6 +38,25 @@ void gameUI::draw(sf::RenderWindow &window)
 	{
 		window.draw(it.sprite);
 	}
+	switch (phase)
+	{
+	case 1:
+		activeSprite.setPosition(sf::Vector2f(position.x + 29, position.y + 68));
+		break;
+	case 2:
+		activeSprite.setPosition(sf::Vector2f(position.x + 90, position.y + 68));
+	}
+	if (actionPoints > 0)
+	{
+		apSprite.setPosition(sf::Vector2f(position.x + 8, position.y + 40));
+		window.draw(apSprite);
+		if (actionPoints > 1)
+		{
+			apSprite.setPosition(sf::Vector2f(position.x + 8, position.y + 7));
+			window.draw(apSprite);
+		}
+	}
+	window.draw(activeSprite);
 }
 
 void gameUI::hoover(sf::Vector2i mousePos)
@@ -63,6 +88,16 @@ buttonCode gameUI::clicked(sf::Vector2i mousePos)
 		}
 	}
 	return buttonCode::none;
+}
+
+void gameUI::setActivePhase(int p)
+{
+	phase = p;
+}
+
+void gameUI::setAP(int ap)
+{
+	actionPoints = ap;
 }
 
 UIbutton::UIbutton(std::vector<sf::Texture> tex, sf::Vector2f pos, buttonCode c) : textures(tex), position(pos), code(c)
