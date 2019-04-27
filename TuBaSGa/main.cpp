@@ -6,10 +6,12 @@
 #include "player.h"
 #include "UI.h"
 
-float frameRate = 60;
+const float frameRate = 60;
+const unsigned int windowWidth = 1280;
+const unsigned int windowHeight = 720;
 
 enum class turnPhase { moving, shooting };
-enum class turnUser {player, ai};
+enum class turnUser { player, ai };
 
 struct turnStruct
 {
@@ -49,7 +51,7 @@ int gameLoop(sf::RenderWindow &window)
 	vect.push_back(&Player.sprite);
 	sf::Vector2i target = sf::Vector2i(-1, -1);
 	std::vector<sf::Vector2i> path(1, sf::Vector2i(0, 0));
-	gameUI ui(sf::Vector2f(0, 640));
+	gameUI ui(sf::Vector2f(0, 640), sf::Vector2f(windowWidth-127,0));
 	turnStruct turn;
 	while (window.isOpen())
 	{
@@ -164,7 +166,7 @@ int gameLoop(sf::RenderWindow &window)
 
 int main()
 {
-	sf::RenderWindow window(sf::VideoMode(1280, 720), "NAME");
+	sf::RenderWindow window(sf::VideoMode(windowWidth, windowHeight), "NAME");
 	gameLoop(window);
 	return 0;
 }

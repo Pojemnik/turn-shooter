@@ -1,11 +1,13 @@
 #include "UI.h"
 
-gameUI::gameUI(sf::Vector2f pos) : position(pos)
+gameUI::gameUI(const sf::Vector2f posLB, const sf::Vector2f posRT) : positionLeftBottom(posLB), sizeLeftBottom(200,80), positionRightTop(posRT), sizeRightTop(127, 80)
 {
-	size = sf::Vector2f(200, 80);
-	texture.loadFromFile("../img/ui_left_bottom.png");
-	sprite.setTexture(texture);
-	sprite.setPosition(pos);
+	textureLeftBottom.loadFromFile("../img/ui_left_bottom.png");
+	spriteLeftBottom.setTexture(textureLeftBottom);
+	spriteLeftBottom.setPosition(posLB);
+	textureRightTop.loadFromFile("../img/ui_right_top.png");
+	spriteRightTop.setTexture(textureRightTop);
+	spriteRightTop.setPosition(posRT);
 	apTex.loadFromFile("../img/ap.png");
 	apSprite.setTexture(apTex);
 	activeTex.loadFromFile("../img/active_phase.png");
@@ -18,7 +20,7 @@ gameUI::gameUI(sf::Vector2f pos) : position(pos)
 	textures.push_back(temp);
 	temp.loadFromFile("../img/walk_ico/walk_ico3.png");
 	textures.push_back(temp);
-	buttons.push_back(UIbutton(textures, sf::Vector2f(pos.x + 20, pos.y + 20), buttonCode::walk));
+	buttons.push_back(UIbutton(textures, sf::Vector2f(posLB.x + 20, posLB.y + 20), buttonCode::walk));
 	textures.clear();
 	temp.loadFromFile("../img/shoot_ico/shoot_ico1.png");
 	textures.push_back(temp);
@@ -26,40 +28,41 @@ gameUI::gameUI(sf::Vector2f pos) : position(pos)
 	textures.push_back(temp);
 	temp.loadFromFile("../img/shoot_ico/shoot_ico3.png");
 	textures.push_back(temp);
-	buttons.push_back(UIbutton(textures, sf::Vector2f(pos.x + 80, pos.y + 20), buttonCode::shoot));
+	buttons.push_back(UIbutton(textures, sf::Vector2f(posLB.x + 80, posLB.y + 20), buttonCode::shoot));
 	phase = 1;
 	actionPoints = 2;
 }
 
 void gameUI::draw(sf::RenderWindow &window)
 {
-	window.draw(sprite);
-	for (auto& it : buttons)
+	window.draw(spriteLeftBottom);
+	window.draw(spriteRightTop);
+	for (const auto& it : buttons)
 	{
 		window.draw(it.sprite);
 	}
 	switch (phase)
 	{
 	case 1:
-		activeSprite.setPosition(sf::Vector2f(position.x + 29, position.y + 68));
+		activeSprite.setPosition(sf::Vector2f(positionLeftBottom.x + 29, positionLeftBottom.y + 68));
 		break;
 	case 2:
-		activeSprite.setPosition(sf::Vector2f(position.x + 90, position.y + 68));
+		activeSprite.setPosition(sf::Vector2f(positionLeftBottom.x + 90, positionLeftBottom.y + 68));
 	}
 	if (actionPoints > 0)
 	{
-		apSprite.setPosition(sf::Vector2f(position.x + 8, position.y + 40));
+		apSprite.setPosition(sf::Vector2f(positionLeftBottom.x + 8, positionLeftBottom.y + 40));
 		window.draw(apSprite);
 		if (actionPoints > 1)
 		{
-			apSprite.setPosition(sf::Vector2f(position.x + 8, position.y + 7));
+			apSprite.setPosition(sf::Vector2f(positionLeftBottom.x + 8, positionLeftBottom.y + 7));
 			window.draw(apSprite);
 		}
 	}
 	window.draw(activeSprite);
 }
 
-void gameUI::hoover(sf::Vector2i mousePos)
+void gameUI::hoover(const sf::Vector2i mousePos)
 {
 	if (isHovered(mousePos))
 	{
@@ -73,12 +76,12 @@ void gameUI::hoover(sf::Vector2i mousePos)
 	}
 }
 
-bool gameUI::isHovered(sf::Vector2i mousePos)
+bool gameUI::isHovered(const sf::Vector2i mousePos)
 {
-	return (mousePos.x > position.x && mousePos.x < position.x + size.x && mousePos.y > position.y && mousePos.y < position.y + size.y);
+	return (mousePos.x > positionLeftBottom.x && mousePos.x < positionLeftBottom.x + sizeLeftBottom.x && mousePos.y > positionLeftBottom.y && mousePos.y < positionLeftBottom.y + sizeLeftBottom.y);
 }
 
-buttonCode gameUI::clicked(sf::Vector2i mousePos)
+buttonCode gameUI::clicked(const sf::Vector2i mousePos)
 {
 	for (auto& it : buttons)
 	{
@@ -90,32 +93,12 @@ buttonCode gameUI::clicked(sf::Vector2i mousePos)
 	return buttonCode::none;
 }
 
-void gameUI::setActivePhase(int p)
+void gameUI::setActivePhase(const int p)
 {
 	phase = p;
 }
 
-void gameUI::setAP(int ap)
+void gameUI::setAP(const int ap)
 {
 	actionPoints = ap;
-}
-
-UIbutton::UIbutton(std::vector<sf::Texture> tex, sf::Vector2f pos, buttonCode c) : textures(tex), position(pos), code(c)
-{
-	sprite.setTexture(textures[0]);
-	sprite.setPosition(position);
-	textures_it = textures.begin();
-}
-
-void UIbutton::step()
-{
-	if (++textures_it == textures.end())
-		textures_it = textures.begin();
-	sprite.setTexture(*textures_it);
-}
-
-void UIbutton::reset()
-{
-	textures_it = textures.begin();
-	sprite.setTexture(*textures_it);
 }
