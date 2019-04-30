@@ -37,7 +37,6 @@ int gameLoop(sf::RenderWindow &window)
 		system("pause");
 		return 0;
 	}
-	//Map.print();
 	sf::Vector2i mousePos = sf::Mouse::getPosition();
 	std::vector<sf::Texture> playerTex;
 	sf::Texture tex;
@@ -51,7 +50,7 @@ int gameLoop(sf::RenderWindow &window)
 	vect.push_back(&Player.sprite);
 	sf::Vector2i target = sf::Vector2i(-1, -1);
 	std::vector<sf::Vector2i> path(1, sf::Vector2i(0, 0));
-	gameUI ui(sf::Vector2f(0, 640), sf::Vector2f(windowWidth-127,0));
+	gameUI ui(sf::Vector2f(0, 640), sf::Vector2f(windowWidth-127,0), sf::Vector2f(windowWidth/2-100, -90));
 	turnStruct turn;
 	while (window.isOpen())
 	{
@@ -106,6 +105,9 @@ int gameLoop(sf::RenderWindow &window)
 							ui.setActivePhase(2);
 							std::cout << "shoot button pressed!" << std::endl;
 							break;
+						case buttonCode::endTurn:
+							std::cout << "End turn!" << std::endl;
+							break;
 						case buttonCode::none:
 							break;
 						}
@@ -140,6 +142,7 @@ int gameLoop(sf::RenderWindow &window)
 		}
 		window.clear();
 		Map.draw(window);
+		ui.hoover(mousePos);
 		if (target != sf::Vector2i(-1, -1) && !Player.busy && turn.phase == turnPhase::moving && !ui.isHovered(mousePos))
 		{
 			path = Map.drawPath(Player.mapPosition, target, window);
@@ -153,8 +156,8 @@ int gameLoop(sf::RenderWindow &window)
 		if (framesRendered % 10 == 0)
 		{
 			Player.step(Map);
-			ui.hoover(mousePos);
 		}
+		
 		window.draw(Player.sprite);
 		ui.draw(window);
 		window.display();
